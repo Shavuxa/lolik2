@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE restaurant SYSTEM "restaurant.dtd">
+<restaurant>
+    <date day="11" month="6" year="2011">
+        <order>
+            <officiant firstname="vovan" secondname="sidorov"/>
+            <item cost="30" name="bread"/>
+            <item cost="25" name="milk"/>
+            <totalcost>55</totalcost>
+        </order>
+        <order>
+            <officiant firstname="dimok" secondname="kiselev"/>
+            <item cost="30" name="kusel"/>
+            <item cost="20" name="bulka"/>
+            <totalcost>50</totalcost>
+        </order>
+    </date><date day="15" month="5" year="2013">
+    <order>
+        <officiant firstname="maksim" secondname="vorobey"/>
+        <item cost="20" name="pureshka"/>
+        <item cost="40" name="kotleta"/>
+        <totalcost>55</totalcost>
+    </order>
+    <order>
+        <officiant firstname="vitek" secondname="batonov"/>
+        <item cost="35" name="bread"/>
+        <item cost="220" name="kofe"/>
+        <item cost="10" name="saxar"/>
+        <item cost="150" name="kolbasa"/>
+        <item cost="88" name="maslo"/>
+        <totalcost>503</totalcost>
+    </order>
+</date><date day="15" month="12" year="2015">
+    <order>
+        <officiant firstname="vasek" secondname="petrov"/>
+        <item cost="20" name="bread"/>
+        <item cost="40" name="milk"/>
+        <totalcost>60</totalcost>
+    </order>
+</date></restaurant>
