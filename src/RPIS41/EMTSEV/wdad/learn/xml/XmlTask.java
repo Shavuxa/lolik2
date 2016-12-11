@@ -1,5 +1,8 @@
 package RPIS41.EMTSEV.wdad.learn.xml;
 
+import RPIS41.EMTSEV.wdad.learn.rmi.Item;
+import RPIS41.EMTSEV.wdad.learn.rmi.Officiant;
+import RPIS41.EMTSEV.wdad.learn.rmi.Order;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -12,18 +15,21 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.LinkedList;
 
 
 public class XmlTask {
     private Document xmlFile;
     private String path;
 
-    public XmlTask(String path) throws IOException, SAXException, ParserConfigurationException {
-        this.path = path;
-        File file = new File(path);
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-        xmlFile = builder.parse(file);
+    public XmlTask(String path)  {
+        try {
+            this.path = path;
+            File file = new File(path);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+            xmlFile = builder.parse(file);
+        }catch (IOException|SAXException|ParserConfigurationException ex){ex.printStackTrace();}
     }
 
     public int earningsTotal(String officiantSecondName, Calendar calendar){
@@ -75,6 +81,49 @@ public class XmlTask {
                 return;
             }
         }
+    }
+    public LinkedList<Order> getOrders(Calendar calendar){
+        LinkedList<Order> result = new LinkedList<Order>();
+        NodeList dates = xmlFile.getElementsByTagName("date");
+        for(int i = 0; i < dates.getLength(); i++){
+            Element date = (Element)dates.item(i);
+            if(Integer.parseInt(date.getAttribute("day")) == calendar.get(Calendar.DAY_OF_MONTH) &&
+                    Integer.parseInt(date.getAttribute("month")) == (calendar.get(Calendar.MONTH) + 1) &&
+                    Integer.parseInt(date.getAttribute("year")) == calendar.get(Calendar.YEAR)){
+                NodeList orders = date.getElementsByTagName("order");
+                for(int j = 0; j < orders.getLength(); j++){
+                    Element order = (Element)orders.item(j);
+                    LinkedList<Item> addingItems = new LinkedList<Item>();
+                    Element officiant = (Element)order.getElementsByTagName("officiant").item(0);
+                    Officiant addingOfficiant = new Officiant(officiant.getAttribute("firstname"), officiant.getAttribute("secondname"));
+                    NodeList items = order.getElementsByTagName("item");
+                    for(int k = 0; k < items.getLength(); k++){
+                        Element item = (Element)items.item(k);
+                        addingItems.add(new Item(item.getAttribute("name"), Integer.parseInt(item.getAttribute("cost"))));
+                    }
+                    result.add(new Order(addingOfficiant, addingItems));
+                }
+                break;
+            }
+        }
+        return result;
+    }
+
+    public Calendar lastOfficiantWorkDate(Officiant officiant){
+        Calendar result = null;
+        NodeList officiants = xmlFile.getElementsByTagName("officiant");
+        for(int i = 0; i < officiants.getLength(); i++){
+            Element officiantElement = (Element)officiants.item(i);
+            if( officiantElement.getAttribute("firstname").equals(officiant.getFirstname()) &&
+                    officiantElement.getAttribute("secondname").equals(officiant.getSecondName())){
+                Element date = (Element) officiantElement.getParentNode().getParentNode();
+                result = Calendar.getInstance();
+                result.set( Integer.parseInt(date.getAttribute("year")),
+                        Integer.parseInt(date.getAttribute("month")),
+                        Integer.parseInt(date.getAttribute("day")));
+            }
+        }
+        return result;
     }
     public void changeOfficiantName(String oldFirstName, String oldSecondName,String newFirstName, String newSecondName){
         NodeList dates = xmlFile.getElementsByTagName("date");
